@@ -34,15 +34,20 @@ pub fn is_here(s: &Session, here: &str) -> bool {
 fn context_score(s: &Session, ctx: &Ctx) -> f64 {
     let age_days = ctx.now.saturating_sub(last_used(s, ctx.history)) as f64 / 86_400.0;
     let recency = 50.0 / (1.0 + age_days);
-    let here = if s.cwd == ctx.here {
-        20.0
-    } else if is_here(s, &ctx.here) || ctx.here.starts_with(&format!("{}/", s.cwd)) {
-        10.0
+    // Proximity to the current dir scales recency instead of adding a flat
+    // bonus, so an old session here doesn't outrank yesterday's work elsewhere.
+    // A parent dir only counts if it's a real project, not $HOME or /.
+    let home = dirs::home_dir().map(|h| h.to_string_lossy().into_owned()).unwrap_or_default();
+    let is_parent = s.cwd != home && s.cwd != "/" && ctx.here.starts_with(&format!("{}/", s.cwd));
+    let near = if s.cwd == ctx.here {
+        2.0
+    } else if is_here(s, &ctx.here) || is_parent {
+        1.5
     } else {
-        0.0
+        1.0
     };
     let freq = (5.0 * (1.0 + ctx.history.count(&s.id) as f64).ln()).min(15.0);
-    recency + here + freq
+    recency * near + freq
 }
 
 pub fn rank(sessions: &[Session], query: &str, ctx: &Ctx, here_only: bool) -> Vec<Hit> {

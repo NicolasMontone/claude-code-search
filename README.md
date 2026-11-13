@@ -37,7 +37,7 @@ Keys: type to search · ↑/↓ or ctrl-n/p · enter resume · ctrl-f fork · ta
 
 ## Ranking
 
-- **No query:** frecency. Last activity decays (`50 / (1 + days)`), plus a boost for sessions in the current directory (or parent/child of it) and for sessions you resume often through `ccs`.
+- **No query:** frecency. Last activity decays (`50 / (1 + days)`); sessions in the current directory get 2× that (1.5× for a parent/child project dir, never `$HOME`), plus a bonus for sessions you resume often through `ccs`.
 - **Query:** every word must appear somewhere (title, path, branch, any prompt), or the title/path must be a tight fuzzy match. Title hits outrank prompt hits; frecency breaks ties.
 
 Titles come from Claude's own `ai-title`, then `summary`, then the first non-slash prompt.
