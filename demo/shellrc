@@ -1,0 +1,7 @@
+# Sourced (hidden) at the start of demo/launch.tape. Run from the repo root.
+export BASH_SILENCE_DEPRECATION_WARNING=1
+export HOME="$PWD/demo/out/home"
+export PATH="$PWD/demo/bin:$PATH"
+PS1='\[\e[38;2;137;180;250m\]\w\[\e[0m\] \[\e[38;2;217;119;87m\]❯\[\e[0m\] '
+cd ~/code/api
+clear
